@@ -27,8 +27,8 @@ uint32_t  Ttk_FileGetCRC32 (const char* sz_path);
 char* Ttk_FileGetExt (const char* sz_path);
 char* Ttk_FileFixExt (const char* sz_path, const char* sz_ext);
 
-int Ttk_StrCmpI (const char* lhs, const char* rhs);
-int Ttk_StrCmpIn (const char* lhs, const char* rhs, uint64_t n);
+int Ttk_StrCmpI (const char* sz_lhs, const char* sz_rhs);
+int Ttk_StrCmpIn (const char* sz_lhs, const char* sz_rhs, uint64_t n);
 
 typedef struct {
     uint64_t   length;    /* Encoded and Decoded sizes */
