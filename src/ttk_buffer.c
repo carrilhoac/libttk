@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 
 TtkBuffer*
 Ttk_BufAlloc(uint64_t buffer_size)
@@ -52,11 +53,56 @@ Ttk_BufDiskSave (const char *sz_path, const TtkBuffer *buf)
 int
 Ttk_BufReSizeEx (TtkBuffer* buf, uint64_t new_size, int keep_data)
 {
+  uint64_t min_size;
+  void* new_ptr;
+
+  if (!buf)
+    return TTK_FAILURE;
+
+
+  if (keep_data == TTK_TRUE)
+  {
+    if (buf->data)
+      free(buf->data);
+
+    buf->data = (void*) malloc(new_size);
+
+    if (!buf->data)
+      return TTK_FAILURE;
+
+  }
+  else if (keep_data == TTK_FALSE)
+  {
+    buf->data = (void*) realloc(buf->data, new_size);
+
+    if (!buf->data)
+    {
+      new_ptr = (void*) malloc(new_size);
+
+      if (!new_ptr)
+        return TTK_FAILURE;
+
+      min_size = ((new_size < buf->length) ? (new_size) : (buf->length));
+      memcpy (new_ptr, buf->data, min_size);
+
+      free (buf->data);
+      buf->data = new_ptr;
+    }
+  }
+  else
+    return TTK_FAILURE;
+
+  buf->length = new_size;
+  if (buf->offset > buf->length)
+    buf->offset = buf->length;
+
+  return TTK_SUCCESS;
 }
 
 int
 Ttk_BufReSize (TtkBuffer* buf, uint64_t new_size)
 {
+  return Ttk_BufReSizeEx (buf, new_size, 1);
 }
 
 int

@@ -10,6 +10,9 @@
 #define TTK_FAILURE     -1
 #define TTK_SUCCESS     0
 
+#define TTK_TRUE        1
+#define TTK_FALSE       0
+
 #define TTK_SEEK_SET    0
 #define TTK_SEEK_CUR    1
 #define TTK_SEEK_END    2
