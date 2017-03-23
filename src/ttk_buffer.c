@@ -181,6 +181,35 @@ Ttk_BufWrite (const void* src, uint64_t entry_size, uint64_t entry_count,
 uint64_t
 Ttk_BufSeek (TtkBuffer* buf, uint64_t offset, uint64_t origin)
 {
+  if (!buf)
+    return TTK_FAILURE;
+
+  if (origin == TTK_SEEK_CUR)
+    {
+      buf->offset += offset;
+      goto seek_finish;
+    }
+  else if (origin == TTK_SEEK_SET)
+    {
+      buf->offset = offset;
+      goto seek_finish;
+    }
+  else if (origin == TTK_SEEK_END)
+    {
+      if (offset > buf->length)
+        buf->offset = 0;
+      else
+        buf->offset = buf->length - offset;
+    }
+
+  return TTK_FAILURE;
+
+seek_finish:
+
+  if (buf->offset > buf->length)
+    buf->offset = buf->length;
+
+  return TTK_SUCCESS;
 }
 
 uint64_t

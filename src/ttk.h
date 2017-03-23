@@ -24,8 +24,8 @@ extern "C" {
 #include <stdint.h>
 #include <wchar.h>
 
-uint64_t  Ttk_FileGetSize (const char* sz_path);
-uint32_t  Ttk_FileGetCRC32 (const char* sz_path);
+uint64_t Ttk_FileGetSize (const char* sz_path);
+uint32_t Ttk_FileGetCRC32 (const char* sz_path);
 
 char* Ttk_FileGetExt (const char* sz_path);
 char* Ttk_FileFixExt (const char* sz_path, const char* sz_ext);
@@ -39,46 +39,46 @@ typedef struct {
     void*     data;       /* Pointer to data chunk */
 } TtkBuffer;
 
-TtkBuffer*  Ttk_BufAlloc (uint64_t buffer_size);
-void  Ttk_BufFree (TtkBuffer* buf);
+TtkBuffer* Ttk_BufAlloc (uint64_t buffer_size);
+void Ttk_BufFree (TtkBuffer* buf);
 
-TtkBuffer*  Ttk_BufDiskLoad (const char *sz_path);
-int   Ttk_BufDiskSave (const char *sz_path, const TtkBuffer *buf);
+TtkBuffer* Ttk_BufDiskLoad (const char *sz_path);
+int Ttk_BufDiskSave (const char *sz_path, const TtkBuffer *buf);
 
-int   Ttk_BufReSizeEx (TtkBuffer* buf, uint64_t new_size, int keep_data);
-int   Ttk_BufReSize (TtkBuffer* buf, uint64_t new_size);
+int Ttk_BufReSizeEx (TtkBuffer* buf, uint64_t new_size, int keep_data);
+int Ttk_BufReSize (TtkBuffer* buf, uint64_t new_size);
 
-int   Ttk_BufMemCmp (const TtkBuffer *lhs, const TtkBuffer *rhs);
-void  Ttk_BufMemSet (TtkBuffer* buf, int val);
+int Ttk_BufMemCmp (const TtkBuffer *lhs, const TtkBuffer *rhs);
+void Ttk_BufMemSet (TtkBuffer* buf, int val);
 
-TtkBuffer*  Ttk_BufCropSelect (const TtkBuffer* buf,
-                               uint64_t start, uint64_t length);
+TtkBuffer* Ttk_BufCropSelect (const TtkBuffer* buf,
+  uint64_t start, uint64_t length);
 
-TtkBuffer*  Ttk_BufGenCpy (const TtkBuffer* buf);
-TtkBuffer*  Ttk_BufMemCpy (const void* src, uint64_t length);
+TtkBuffer* Ttk_BufGenCpy (const TtkBuffer* buf);
+TtkBuffer* Ttk_BufMemCpy (const void* src, uint64_t length);
 
-uint64_t   Ttk_BufRead (void* dst, uint64_t entry_size,
-                        uint64_t entry_count, TtkBuffer* buf);
+uint64_t Ttk_BufRead (void* dst, uint64_t entry_size,
+  uint64_t entry_count, TtkBuffer* buf);
 
-uint64_t   Ttk_BufWrite (const void* src, uint64_t entry_size,
-                         uint64_t entry_count, TtkBuffer* dst);
+uint64_t Ttk_BufWrite (const void* src, uint64_t entry_size,
+  uint64_t entry_count, TtkBuffer* dst);
 
-uint64_t   Ttk_BufSeek (TtkBuffer* buf,
-                        uint64_t offset, uint64_t origin);
+uint64_t Ttk_BufSeek (TtkBuffer* buf,
+  uint64_t offset, uint64_t origin);
 
-uint64_t  Ttk_BufReadBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
-uint64_t  Ttk_BufWriteBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
+uint64_t Ttk_BufReadBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
+uint64_t Ttk_BufWriteBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
 
-char*  Ttk_BufGenStrUTF8 (const TtkBuffer* buf, uint64_t* dst_len);
+char* Ttk_BufGenStrUTF8 (const TtkBuffer* buf, uint64_t* dst_len);
 wchar_t* Ttk_BufGenStrUTF16 (const TtkBuffer* buf, uint64_t* dst_len);
 
-float     Ttk_BufStrToFlt32 (TtkBuffer* buf);
-double    Ttk_BufStrToFlt64 (TtkBuffer* buf);
+float Ttk_BufStrToFlt32 (TtkBuffer* buf);
+double Ttk_BufStrToFlt64 (TtkBuffer* buf);
 
-int32_t   Ttk_BufStrToInt32 (TtkBuffer* buf);
-int64_t   Ttk_BufStrToInt64 (TtkBuffer* buf);
+int32_t Ttk_BufStrToInt32 (TtkBuffer* buf);
+int64_t Ttk_BufStrToInt64 (TtkBuffer* buf);
 
-uint32_t   Ttk_BufHashCRC32 (const TtkBuffer* buf);
+uint32_t Ttk_BufHashCRC32 (const TtkBuffer* buf);
 
 #ifdef __cplusplus
 }
