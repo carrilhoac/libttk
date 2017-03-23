@@ -52,19 +52,19 @@ int   Ttk_BufMemCmp (const TtkBuffer *lhs, const TtkBuffer *rhs);
 void  Ttk_BufMemSet (TtkBuffer* buf, int val);
 
 TtkBuffer*  Ttk_BufCropSelect (const TtkBuffer* buf,
-              uint64_t start, uint64_t length);
+                               uint64_t start, uint64_t length);
 
 TtkBuffer*  Ttk_BufGenCpy (const TtkBuffer* buf);
 TtkBuffer*  Ttk_BufMemCpy (const void* src, uint64_t length);
 
 uint64_t   Ttk_BufRead (void* dst, uint64_t entry_size,
-              uint64_t entry_count, TtkBuffer* buf);
+                        uint64_t entry_count, TtkBuffer* buf);
 
 uint64_t   Ttk_BufWrite (const void* src, uint64_t entry_size,
-              uint64_t entry_count, TtkBuffer* dst);
+                         uint64_t entry_count, TtkBuffer* dst);
 
 uint64_t   Ttk_BufSeek (TtkBuffer* buf,
-              uint64_t offset, uint64_t origin);
+                        uint64_t offset, uint64_t origin);
 
 uint64_t  Ttk_BufReadBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
 uint64_t  Ttk_BufWriteBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);

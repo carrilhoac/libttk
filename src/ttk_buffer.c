@@ -7,14 +7,14 @@
 #include <string.h>
 
 TtkBuffer*
-Ttk_BufAlloc(uint64_t buffer_size)
+Ttk_BufAlloc (uint64_t buffer_size)
 {
-  TtkBuffer* buf = (TtkBuffer*) malloc(sizeof(TtkBuffer));
+  TtkBuffer* buf = (TtkBuffer*) malloc (sizeof (TtkBuffer));
 
   if (!buf)
     return NULL;
 
-  buf->data = (void*) malloc((size_t)buffer_size);
+  buf->data = (void*) malloc ((size_t) buffer_size);
 
   if (!buf->data)
     {
@@ -28,15 +28,15 @@ Ttk_BufAlloc(uint64_t buffer_size)
 }
 
 void
-Ttk_BufFree(TtkBuffer* buf)
+Ttk_BufFree (TtkBuffer* buf)
 {
   if (!buf)
     return;
 
   if (buf->data)
-    free(buf->data);
+    free (buf->data);
 
-  free(buf);
+  free (buf);
   buf = NULL;
 }
 
@@ -59,36 +59,34 @@ Ttk_BufReSizeEx (TtkBuffer* buf, uint64_t new_size, int keep_data)
   if (!buf)
     return TTK_FAILURE;
 
-
   if (keep_data == TTK_TRUE)
-  {
-    if (buf->data)
-      free(buf->data);
-
-    buf->data = (void*) malloc(new_size);
-
-    if (!buf->data)
-      return TTK_FAILURE;
-
-  }
-  else if (keep_data == TTK_FALSE)
-  {
-    buf->data = (void*) realloc(buf->data, new_size);
-
-    if (!buf->data)
     {
-      new_ptr = (void*) malloc(new_size);
+      if (buf->data)
+        free (buf->data);
 
-      if (!new_ptr)
+      buf->data = (void*) malloc (new_size);
+
+      if (!buf->data)
         return TTK_FAILURE;
-
-      min_size = ((new_size < buf->length) ? (new_size) : (buf->length));
-      memcpy (new_ptr, buf->data, min_size);
-
-      free (buf->data);
-      buf->data = new_ptr;
     }
-  }
+  else if (keep_data == TTK_FALSE)
+    {
+      buf->data = (void*) realloc (buf->data, new_size);
+
+      if (!buf->data)
+        {
+          new_ptr = (void*) malloc (new_size);
+
+          if (!new_ptr)
+            return TTK_FAILURE;
+
+          min_size = ((new_size < buf->length) ? (new_size) : (buf->length));
+          memcpy (new_ptr, buf->data, min_size);
+
+          free (buf->data);
+          buf->data = new_ptr;
+        }
+    }
   else
     return TTK_FAILURE;
 
@@ -102,43 +100,81 @@ Ttk_BufReSizeEx (TtkBuffer* buf, uint64_t new_size, int keep_data)
 int
 Ttk_BufReSize (TtkBuffer* buf, uint64_t new_size)
 {
-  return Ttk_BufReSizeEx (buf, new_size, 1);
+  return Ttk_BufReSizeEx (buf, new_size, TTK_TRUE);
 }
 
 int
 Ttk_BufMemCmp (const TtkBuffer *lhs, const TtkBuffer *rhs)
 {
+  if (!lhs || !rhs)
+    return 0;
+
+  if (lhs->length != rhs->length)
+    return lhs->length - rhs->length;
+
+  return memcmp (lhs->data, rhs->data, (size_t) lhs->length);
 }
 
 void
 Ttk_BufMemSet (TtkBuffer* buf, int val)
 {
+  if (!buf)
+    return;
+
+  memset (buf->data, val, buf->length);
 }
 
 TtkBuffer*
 Ttk_BufCropSelect (const TtkBuffer* buf, uint64_t start, uint64_t length)
 {
+  TtkBuffer* ret;
+
+  if (!buf || !length)
+    return NULL;
+
+  if (buf->length < (start + length))
+    return NULL;
+
+  ret = Ttk_BufAlloc(length);
+  memcpy(ret->data, buf->data + start, length);
+  return ret;
 }
 
 TtkBuffer*
 Ttk_BufGenCpy (const TtkBuffer* buf)
 {
+  TtkBuffer *ret;
+
+  if (!buf)
+    return NULL;
+
+  ret = Ttk_BufAlloc(buf->length);
+  memcpy(ret->data, buf->data, (size_t) bug->length);
+  return ret;
 }
 
 TtkBuffer*
 Ttk_BufMemCpy (const void* src, uint64_t length)
 {
+  TtkBuffer *buf;
+
+  if (!src || !length)
+    return NULL;
+
+  buf = Ttk_BufAlloc(length);
+  memcpy(buf->data, src, (size_t)length);
+  return buf;
 }
 
 uint64_t
 Ttk_BufRead (void* dst, uint64_t entry_size, uint64_t entry_count,
-  TtkBuffer* buf)
+             TtkBuffer* buf)
 {
 }
 
 uint64_t
 Ttk_BufWrite (const void* src, uint64_t entry_size, uint64_t entry_count,
-  TtkBuffer* dst)
+              TtkBuffer* dst)
 {
 }
 
