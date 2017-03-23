@@ -45,13 +45,8 @@ Ttk_FileFixExt (const char* sz_path, const char* sz_ext)
 int
 Ttk_StrCmpI (const char* sz_lhs, const char* sz_rhs)
 {
-  char *p1, *p2;
-
-  if (!sz_lhs || !sz_rhs)
-    return -1;
-
-  p1 = (char*)sz_lhs;
-  p2 = (char*)sz_rhs;
+  char* p1 = (char*)sz_lhs;
+  char* p2 = (char*)sz_rhs;
 
   while (*p1 && *p2)
     if (toupper(*p1++) - toupper(*p2++))
@@ -61,6 +56,14 @@ Ttk_StrCmpI (const char* sz_lhs, const char* sz_rhs)
 }
 
 int
-Ttk_StrCmpIn (const char* lhs, const char* rhs, uint64_t n)
+Ttk_StrCmpIn (const char* sz_lhs, const char* sz_rhs, uint64_t n)
 {
+  char* p1 = (char*)sz_lhs;
+  char* p2 = (char*)sz_rhs;
+
+  while (n--)
+    if (toupper(*p1++) - toupper(*p2++))
+      return -1;
+
+  return 0;
 }
