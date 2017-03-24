@@ -6,6 +6,40 @@
 #include <stddef.h>
 #include <string.h>
 
+static int
+Ttk_BufIsWorkSafe (const TtkBuffer* buf)
+{
+  if (!buf)
+    return TTK_FALSE;
+
+  if (!buf->length)
+    return TTK_FALSE;
+
+  if (buf->offset > buf->length)
+    return TTK_FALSE;
+
+  return TTK_TRUE;
+}
+
+static int
+Ttk_BufIsStringSafe (const TtkBuffer* buf)
+{
+  char* ptr;
+  uint64_t itr;
+
+  if (!Ttk_BufIsWorkSafe(buf))
+    return TTK_FALSE;
+
+  ptr = (char*)buf->data + buf->offset;
+  itr = buf->length - buf->offset;
+
+  while (itr--)
+    if (!(*ptr++))
+      return TTK_TRUE;
+
+  return TTK_FALSE;
+}
+
 TtkBuffer*
 Ttk_BufAlloc (uint64_t buffer_size)
 {
@@ -115,13 +149,14 @@ Ttk_BufMemCmp (const TtkBuffer *lhs, const TtkBuffer *rhs)
   return memcmp (lhs->data, rhs->data, (size_t) lhs->length);
 }
 
-void
+int
 Ttk_BufMemSet (TtkBuffer* buf, int val)
 {
-  if (!buf)
-    return;
+  if (!Ttk_BufIsWorkSafe(buf))
+    return TTK_SUCCESS;
 
   memset (buf->data, val, buf->length);
+  return TTK_FAILURE;
 }
 
 TtkBuffer*
@@ -129,7 +164,7 @@ Ttk_BufCropSelect (const TtkBuffer* buf, uint64_t start, uint64_t length)
 {
   TtkBuffer* ret;
 
-  if (!buf || !length)
+  if (!Ttk_BufIsWorkSafe(buf) || !length)
     return NULL;
 
   if (buf->length < (start + length))
@@ -145,7 +180,7 @@ Ttk_BufGenCpy (const TtkBuffer* buf)
 {
   TtkBuffer *ret;
 
-  if (!buf)
+  if (!Ttk_BufIsWorkSafe(buf))
     return NULL;
 
   ret = Ttk_BufAlloc(buf->length);
@@ -172,7 +207,7 @@ Ttk_BufRead (void* dst, uint64_t entry_size,
 {
   uint64_t block_size = entry_count * entry_size;
 
-  if (!dst || !buf || !block_size)
+  if (!dst || !Ttk_BufIsWorkSafe(buf) || !block_size)
     return 0;
 
   if ((buf->offset + block_size) > buf->length)
@@ -190,7 +225,7 @@ Ttk_BufWrite (const void* src, uint64_t entry_size,
 {
   uint64_t block_size = entry_count * entry_size;
 
-  if (!dst || !buf || !block_size)
+  if (!dst || !Ttk_BufIsWorkSafe(buf) || !block_size)
     return 0;
 
   if ((buf->offset + block_size) > buf->length)
@@ -205,7 +240,7 @@ Ttk_BufWrite (const void* src, uint64_t entry_size,
 uint64_t
 Ttk_BufSeek (TtkBuffer* buf, uint64_t offset, uint64_t origin)
 {
-  if (!buf)
+  if (!Ttk_BufIsWorkSafe(buf))
     return TTK_FAILURE;
 
   if (origin == TTK_SEEK_CUR)
@@ -259,19 +294,38 @@ Ttk_BufGenStrUTF16 (const TtkBuffer* buf, uint64_t* dst_len)
 float
 Ttk_BufStrToFlt32 (TtkBuffer* buf)
 {
+  if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
+    return 0.0f;
+
 }
 
 double
 Ttk_BufStrToFlt64 (TtkBuffer* buf)
 {
+  if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
+    return 0.0;
 }
 
 int32_t
 Ttk_BufStrToInt32 (TtkBuffer* buf)
 {
+  int32_t res;
+  char *src, *dst;
+
+  if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
+    return 0;
+
+  src = (char*) buf->data + buf->offset;
+
+  res = strtol(src, &dst, 10);
+  buf->offset += dst - src;
+
+  return res;
 }
 
 int64_t
 Ttk_BufStrToInt64 (TtkBuffer* buf)
 {
+  if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
+    return 0;
 }

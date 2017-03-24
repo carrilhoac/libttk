@@ -49,7 +49,7 @@ int Ttk_BufReSizeEx (TtkBuffer* buf, uint64_t new_size, int keep_data);
 int Ttk_BufReSize (TtkBuffer* buf, uint64_t new_size);
 
 int Ttk_BufMemCmp (const TtkBuffer *lhs, const TtkBuffer *rhs);
-void Ttk_BufMemSet (TtkBuffer* buf, int val);
+int Ttk_BufMemSet (TtkBuffer* buf, int val);
 
 TtkBuffer* Ttk_BufCropSelect (const TtkBuffer* buf,
   uint64_t start, uint64_t length);
