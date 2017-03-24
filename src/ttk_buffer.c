@@ -12,10 +12,7 @@ Ttk_BufIsWorkSafe (const TtkBuffer* buf)
   if (!buf)
     return TTK_FALSE;
 
-  if (!buf->length)
-    return TTK_FALSE;
-
-  if (buf->offset > buf->length)
+  if (!buf->length || (buf->offset > buf->length))
     return TTK_FALSE;
 
   return TTK_TRUE;
@@ -77,11 +74,48 @@ Ttk_BufFree (TtkBuffer* buf)
 TtkBuffer*
 Ttk_BufDiskLoad (const char *sz_path)
 {
+  TtkBuffer* fb;
+  uint64_t fs;
+  FILE *fp;
+
+  if (!sz_path)
+    return NULL;
+
+  fs = Ttk_FileGetSize(sz_path);
+  fb = Ttk_BufAlloc(fs);
+  fp = fopen(sz_path, "rb");
+
+  if (!fs || !fb)
+    return NULL;
+
+  if (!fp)
+    {
+      free(fb);
+      return NULL;
+    }
+
+  fread(fb->data, 1, (size_t)fs, fp);
+  fclose(fp);
+  return fb;
 }
 
 int
 Ttk_BufDiskSave (const char *sz_path, const TtkBuffer *buf)
 {
+  FILE *fp;
+
+  if (!sz_path || !Ttk_BufIsWorkSafe(buf))
+    return TTK_FAILURE;
+
+  fp = fopen(sz_path, "wb");
+
+  if (!fp)
+    return TTK_FAILURE;
+
+  fwrite(buf->data, 1, buf->length, fp);
+
+  fclose(fp);
+  return TTK_SUCCESS;
 }
 
 int
@@ -203,7 +237,7 @@ Ttk_BufMemCpy (const void* src, uint64_t length)
 
 uint64_t
 Ttk_BufRead (void* dst, uint64_t entry_size,
-  uint64_t entry_count, TtkBuffer* buf)
+             uint64_t entry_count, TtkBuffer* buf)
 {
   uint64_t block_size = entry_count * entry_size;
 
@@ -221,7 +255,7 @@ Ttk_BufRead (void* dst, uint64_t entry_size,
 
 uint64_t
 Ttk_BufWrite (const void* src, uint64_t entry_size,
-  uint64_t entry_count, TtkBuffer* dst)
+              uint64_t entry_count, TtkBuffer* dst)
 {
   uint64_t block_size = entry_count * entry_size;
 
@@ -326,6 +360,16 @@ Ttk_BufStrToInt32 (TtkBuffer* buf)
 int64_t
 Ttk_BufStrToInt64 (TtkBuffer* buf)
 {
+  int64_t res;
+  char *src, *dst;
+
   if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
     return 0;
+
+  src = (char*) buf->data + buf->offset;
+
+  res = strtoll(src, &dst, 10);
+  buf->offset += dst - src;
+
+  return res;
 }
