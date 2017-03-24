@@ -6,17 +6,17 @@
 #include <string.h>
 #include <ctype.h>
 
-static uint32_t
-Ttk_UpdateCRC32_ThreadSafe (uint32_t crc, const void* src, uint64_t length)
+#define TTK_CRC32_TBLSIZE 256
+static uint32_t crc_tbl[TTK_CRC32_TBLSIZE];
+static int crc_gen = TTK_FALSE;
+
+static void
+Ttk_GenCRC32Table (void)
 {
-  uint32_t *table;
-  uint32_t rem, crc, i, j;
-  uint8_t octet, *p, *q;
+  uint32_t rem;
+  int i, j;
 
-  table = (uint32_t*) malloc (256 * sizeof (uint32_t));
-
-  /* Calculate CRC table. */
-  for (i = 0; i < 256; ++i)
+  for (i = 0; i < TTK_CRC32_TBLSIZE; ++i)
     {
       rem = i;/* remainder from polynomial division */
       for (j = 0; j < 8; ++j)
@@ -32,6 +32,18 @@ Ttk_UpdateCRC32_ThreadSafe (uint32_t crc, const void* src, uint64_t length)
       table[i] = rem;
     }
 
+  crc_gen = TTK_TRUE;
+}
+
+uint32_t
+Ttk_UpdateCRC32 (uint32_t crc, const void* src, uint64_t length)
+{
+  uint32_t i, j;
+  uint8_t octet, *p, *q;
+
+  if (!crc_gen)
+    Ttk_GenCRC32Table();
+
   crc = ~crc;
 
   q = (uint8_t*) src + length;
@@ -43,8 +55,6 @@ Ttk_UpdateCRC32_ThreadSafe (uint32_t crc, const void* src, uint64_t length)
       crc = (crc >> 8) ^ table[ (crc & 0xff) ^ octet];
     }
   while (++p < q);
-
-  free (table);
   return ~crc;
 }
 

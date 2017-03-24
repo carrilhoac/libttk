@@ -21,13 +21,13 @@ Ttk_BufIsWorkSafe (const TtkBuffer* buf)
 static int
 Ttk_BufIsStringSafe (const TtkBuffer* buf)
 {
-  char* ptr;
+  uint8_t* ptr;
   uint64_t itr;
 
   if (!Ttk_BufIsWorkSafe(buf))
     return TTK_FALSE;
 
-  ptr = (char*)buf->data + buf->offset;
+  ptr = (uint8_t*)buf->data + buf->offset;
   itr = buf->length - buf->offset;
 
   while (itr--)
@@ -321,6 +321,7 @@ Ttk_BufMemMove (TtkBuffer *dst, TtkBuffer *src, uint64_t length)
   return length;
 }
 
+#if 0
 char*
 Ttk_BufGenStrUTF8 (const TtkBuffer* buf, uint64_t* dst_len)
 {
@@ -336,7 +337,6 @@ Ttk_BufStrToFlt32 (TtkBuffer* buf)
 {
   if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
     return 0.0f;
-
 }
 
 double
@@ -345,6 +345,7 @@ Ttk_BufStrToFlt64 (TtkBuffer* buf)
   if (Ttk_BufIsStringSafe(buf) == TTK_FALSE)
     return 0.0;
 }
+#endif
 
 int32_t
 Ttk_BufStrToInt32 (TtkBuffer* buf)
