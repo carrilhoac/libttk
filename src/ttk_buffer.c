@@ -218,7 +218,7 @@ Ttk_BufGenCpy (const TtkBuffer* buf)
     return NULL;
 
   ret = Ttk_BufAlloc(buf->length);
-  memcpy(ret->data, buf->data, (size_t) bug->length);
+  memcpy(ret->data, buf->data, (size_t) buf->length);
   return ret;
 }
 
@@ -259,10 +259,10 @@ Ttk_BufWrite (const void* src, uint64_t entry_size,
 {
   uint64_t block_size = entry_count * entry_size;
 
-  if (!dst || !Ttk_BufIsWorkSafe(buf) || !block_size)
+  if (!dst || !Ttk_BufIsWorkSafe(dst) || !block_size)
     return 0;
 
-  if ((buf->offset + block_size) > buf->length)
+  if ((dst->offset + block_size) > dst->length)
     return 0;
 
   memcpy(dst->data + dst->offset, src, block_size);
