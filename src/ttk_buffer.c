@@ -237,7 +237,7 @@ Ttk_BufMemCpy (const void* src, uint64_t length)
 
 uint64_t
 Ttk_BufRead (void* dst, uint64_t entry_size,
-             uint64_t entry_count, TtkBuffer* buf)
+  uint64_t entry_count, TtkBuffer* buf)
 {
   uint64_t block_size = entry_count * entry_size;
 
@@ -255,7 +255,7 @@ Ttk_BufRead (void* dst, uint64_t entry_size,
 
 uint64_t
 Ttk_BufWrite (const void* src, uint64_t entry_size,
-              uint64_t entry_count, TtkBuffer* dst)
+  uint64_t entry_count, TtkBuffer* dst)
 {
   uint64_t block_size = entry_count * entry_size;
 
@@ -306,13 +306,19 @@ seek_finish:
 }
 
 uint64_t
-Ttk_BufReadBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length)
+Ttk_BufMemMove (TtkBuffer *dst, TtkBuffer *src, uint64_t length)
 {
-}
+  if (!Ttk_BufIsWorkSafe(dst) || !Ttk_BufIsWorkSafe(src) || !length)
+    return 0;
 
-uint64_t
-Ttk_BufWriteBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length)
-{
+  if (((dst->offset + length) > dst->length) ||
+      ((src->offset + length) > src->length))
+    return 0;
+
+  memcpy(dst->data + dst->offset, src->data + src->offset, (size_t)length);
+  dst->offset += length;
+  src->offset += length;
+  return length;
 }
 
 char*

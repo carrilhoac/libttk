@@ -66,8 +66,7 @@ uint64_t Ttk_BufWrite (const void* src, uint64_t entry_size,
 uint64_t Ttk_BufSeek (TtkBuffer* buf,
   uint64_t offset, uint64_t origin);
 
-uint64_t Ttk_BufReadBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
-uint64_t Ttk_BufWriteBuf (TtkBuffer *dst, TtkBuffer *src, uint64_t length);
+uint64_t Ttk_BufMemMove (TtkBuffer *src, TtkBuffer *dst, uint64_t length);
 
 char* Ttk_BufGenStrUTF8 (const TtkBuffer* buf, uint64_t* dst_len);
 wchar_t* Ttk_BufGenStrUTF16 (const TtkBuffer* buf, uint64_t* dst_len);
