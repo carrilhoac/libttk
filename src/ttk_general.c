@@ -50,7 +50,7 @@ Ttk_UpdateCRC32 (uint32_t crc, const void* src, uint64_t length)
   do
     {
       octet = *p;
-      crc = (crc >> 8) ^ crc_tbl[ (crc & 0xff) ^ octet];
+      crc = (crc >> 8) ^ crc_tbl[(crc & 0xff) ^ octet];
     }
   while (++p < q);
   return ~crc;
@@ -94,8 +94,12 @@ Ttk_FileGetExt (const char* sz_path)
   str = (char*)sz_path + length;
 
   while (start--)
-    if (*str-- == '.')
+  {
+    if (*str == '.')
       break;
+    str--;
+  }
+  *str++;
 
   ref = (char*)calloc(length - start + 1, sizeof(char));
   ret = ref;
@@ -106,9 +110,44 @@ Ttk_FileGetExt (const char* sz_path)
   return ret;
 }
 
+static int
+Ttk_FileCheckExt (const char* sz_path, const char* sz_ext)
+{
+  int cmpres;
+  char* cmpext;
+
+  cmpext = Ttk_FileGetExt(sz_path);
+  cmpres = Ttk_StrCmpI(cmpext, sz_ext);
+  free(cmpext);
+
+  return cmpres;
+}
+
 char*
 Ttk_FileFixExt (const char* sz_path, const char* sz_ext)
 {
+  char* resptr;
+  size_t n, n1, n2;
+
+  if (!Ttk_FileCheckExt(sz_path, sz_ext))
+    {
+      n = strlen(sz_path);
+      resptr = (char*) calloc(1, n+1);
+      memcpy(resptr, sz_path, n);
+      return resptr;
+    }
+  else
+    {
+      n1 = strlen (sz_path);
+      n2 = strlen (sz_ext);
+      n = n1 + n2;
+      resptr = (char *) calloc (1, n+2);
+      memcpy (resptr, sz_path, n1);
+      resptr[n1] = '.';
+      memcpy (resptr + n1 + 1, sz_ext, n2);
+      return resptr;
+    }
+  return NULL;
 }
 
 /*!
@@ -121,8 +160,14 @@ Ttk_FileFixExt (const char* sz_path, const char* sz_ext)
 int
 Ttk_StrCmpI (const char* sz_lhs, const char* sz_rhs)
 {
+  size_t n1 = strlen(sz_lhs);
+  size_t n2 = strlen(sz_rhs);
+
   char* p1 = (char*)sz_lhs;
   char* p2 = (char*)sz_rhs;
+
+  if (n1 != n2)
+    return -1;
 
   while (*p1 && *p2)
     if (toupper(*p1++) - toupper(*p2++))

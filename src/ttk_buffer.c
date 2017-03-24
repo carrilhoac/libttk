@@ -380,3 +380,12 @@ Ttk_BufStrToInt64 (TtkBuffer* buf)
 
   return res;
 }
+
+uint32_t
+Ttk_BufHashCRC32 (const TtkBuffer* buf)
+{
+  if (!Ttk_BufIsWorkSafe(buf))
+    return 0;
+
+  return Ttk_UpdateCRC32(0, buf->data, buf->length);
+}
